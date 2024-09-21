@@ -256,12 +256,15 @@ class GestionProyectos {
                     for (Tarea tarea : proyecto.tareas) {
                         if (tarea.descripcion.equals(descripcionTarea) && tarea.programador.equals(programador)) {
                             programador.marcarTareaFinalizada(tarea);
+                            tareaEncontrada = tarea;
                         }
                     }
                     if (tareaEncontrada != null) {
                         programador.marcarTareaFinalizada(tareaEncontrada);
                         System.out.println("Tarea marcada como finalizada.");
-                    } else {
+                    }
+                    if(tareaEncontrada == null)
+                    {
                         System.out.println("Error: Tarea no encontrada o no asignada a este programador.");
                     }
                     break;
