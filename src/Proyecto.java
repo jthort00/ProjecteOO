@@ -27,18 +27,6 @@ public class Proyecto {
             tareas.add(tarea);
         }
 
-        public ArrayList<Tarea> consultarTareasDeProgramador(Programador programador) {
-            ArrayList<Tarea> tareasAsignadas = new ArrayList<>();
-
-            for (Tarea tarea : tareas) {
-                // Suponiendo que Tarea tiene un método getProgramador() que retorna el programador asignado
-                if (tarea.getProgramador().equals(programador)) {
-                    tareasAsignadas.add(tarea);
-                }
-            }
-
-            return tareasAsignadas;
-        }
 
 
 

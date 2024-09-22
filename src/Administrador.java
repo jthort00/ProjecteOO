@@ -45,14 +45,4 @@ class Administrador extends Usuario {
             System.out.println(usuario);
         }
     }
-
-    // Nueva función para listar solo programadores
-    public void listarProgramadores(ArrayList<Usuario> usuarios) {
-        System.out.println("Lista de programadores:");
-        for (Usuario usuario : usuarios) {
-            if (usuario instanceof Programador) {
-                System.out.println(usuario.getNombre());
-            }
-        }
-    }
 }

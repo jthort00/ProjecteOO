@@ -189,33 +189,6 @@ class GestionProyectos {
         return null;
     }
 
-    // Función para verificar si el proyecto existe y permitir crear uno nuevo si no se encuentra
-    public static Proyecto verificarProyectoExistente(Gestor gestor) {
-        Proyecto proyecto;
-        while (true) {
-            System.out.println("Introduce el nombre del proyecto:");
-            String nombreProyecto = scanner.nextLine();
-            proyecto = buscarProyectoPorNombre(nombreProyecto);
-
-            if (proyecto != null) {
-                return proyecto;
-            } else {
-                System.out.println("El proyecto '" + nombreProyecto + "' no existe.");
-                System.out.println("¿Deseas crear un nuevo proyecto con ese nombre? (S/N):");
-                String respuesta = scanner.nextLine();
-                if (respuesta.equalsIgnoreCase("S")) {
-                    gestor.crearProyecto(nombreProyecto);
-                    // Una vez creado, volvemos a buscar para asegurarnos de que se retorne el proyecto correcto
-                    proyecto = buscarProyectoPorNombre(nombreProyecto);
-                    return proyecto;
-                } else {
-                    System.out.println("Por favor, introduce un nombre de proyecto válido.");
-                }
-            }
-        }
-    }
-
-
     public static void menuProgramador(Programador programador) {
         while (true) {
             System.out.println("Menú Programador:");
@@ -286,6 +259,6 @@ class GestionProyectos {
             }
         }
         return null;
-}
+    }
 }
 
