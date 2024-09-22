@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+Usuario --> Administrador
+Usuario --> Gestor
+Usuario --> Programador
+Gestor --> Proyecto
+Proyecto --> Tarea
+abstract class Usuario
+{
+    String nombre;
+    String rol;
+    + getNombre() : String
+    + getRol() : String
+    + toString() : String
+}
+class Administrador
+{
+    String nombre;
+    String rol;
+    * public Administrador()
+    + crearUsuario(nombre, rol, ArrayList<Usuario> usuarios) : void
+    - buscarUsuarioPorNombre(nombre, ArrayList<Usuario> usuarios) : Usuario
+    + eliminarUsuario(nombre, ArrayList<Usuario> usuarios) : void
+    + listarUsuarios(ArrayList<Usuario> usuarios) : void
+    + listarProgramadores(ArrayList<Usuario> usuarios) : void
+
+}
+class Gestor
+{
+    String nombre;
+    String rol;
+    ArrayList<Proyecto> proyectos;
+    * public Gestor(String nombre)
+    + crearProyecto(nombreProyecto) : void
+    + listarProyectos() : void
+    + asignarProgramadorAProyecto(Programador programador, Proyecto proyecto) : void
+    + crearTareaEnProyecto(descripcion, Proyecto proyecto, Programador programador) : void
+    + listarProgramadoresDeProyecto(Proyecto proyecto) : void
+}
+class Programador
+{
+    String nombre;
+    String rol;
+    ArrayList<Proyecto> proyectos;
+    * public Programador(nombre)
+    + consultarProyectos() : void
+    + consultarTareas(Proyecto proyecto) : void
+    + marcarTareaFinalizada(Tarea tarea) : void
+}
+class Proyecto
+{
+     String nombre;
+     Gestor gestor;
+     ArrayList<Programador> programadores;
+     ArrayList<Tarea> tareas;
+     * public Proyecto(nombre, Gestor gestor)
+     + getNombre() : String
+     + setNombre(nombre) : void
+     + getGestor() : Gestor
+     + setGestor(Gestor gestor) : void
+     + getProgramadores() : ArrayList<Programador>
+     + setProgramadores(ArrayList<Programador> programadores) : void
+     + getTareas() : ArrayList<Tarea>
+     + setTareas(ArrayList<Tarea> tareas) : void
+     + toString() : String
+     + asignarProgramador(Programador programador) : void
+     + agregarTarea(Tarea tarea) : void
+     + consultarTareasDeProgramador(Programador programador) : ArrayList<Tarea>
+
+}
+class Tarea
+{
+    String descripcion;
+    boolean finalizada;
+    Programador programador;
+    * public Tarea(descripcion, Programador programador)
+    + getProgramador() : Object
+    + toString() : String
+    + marcarFinalizada() : void
+}
+@enduml
