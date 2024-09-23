@@ -8,17 +8,17 @@ class Administrador extends Usuario {
     }
 
     public void crearUsuario(String nombre, String rol, ArrayList<Usuario> usuarios) {
-        Usuario nuevoUsuario;
-        if (rol.equalsIgnoreCase("Gestor")) {
-            nuevoUsuario = new Gestor(nombre);
-        } else if (rol.equalsIgnoreCase("Programador")) {
-            nuevoUsuario = new Programador(nombre);
-        } else {
-            System.out.println("Rol no válido.");
-            return;
-        }
-        usuarios.add(nuevoUsuario);
-        System.out.println("Usuario creado: " + nuevoUsuario);
+            Usuario nuevoUsuario;
+            if (rol.equalsIgnoreCase("Gestor")) {
+                nuevoUsuario = new Gestor(nombre);
+            } else if (rol.equalsIgnoreCase("Programador")) {
+                nuevoUsuario = new Programador(nombre);
+            } else {
+                System.out.println("Rol no válido.");
+                return;
+            }
+            usuarios.add(nuevoUsuario);
+            System.out.println("Usuario creado: " + nuevoUsuario);
     }
     private Usuario buscarUsuarioPorNombre(String nombre, ArrayList<Usuario> usuarios) {
         for (Usuario usuario : usuarios) {

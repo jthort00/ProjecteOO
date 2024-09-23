@@ -53,16 +53,20 @@ class GestionProyectos {
 
             switch (opcion) {
                 case 1:
-                    System.out.println("Introduce el nombre del nuevo usuario:");
-                    String nombre = scanner.nextLine();
-                    if (nombre.isEmpty()) {
-                        System.out.println("Error: El nombre no puede estar vacío.");
-                        return;
-                    }
-                    System.out.println("Introduce el rol (Gestor/Programador):");
-                    String rol = scanner.nextLine();
-                    admin.crearUsuario(nombre, rol, usuarios);
-                    break;
+                        System.out.println("Introduce el nombre del nuevo usuario:");
+                        String nombre = scanner.nextLine();
+                        if (nombre.isEmpty()) {
+                            System.out.println("Error: El nombre no puede estar vacío.");
+                            return;
+                        }
+                        if (buscarUsuarioPorNombre(nombre, usuarios) != null) {
+                            System.out.println("Error: El nombre de usuario '" + nombre + "' ya está en uso.");
+                            return;
+                        }
+                        System.out.println("Introduce el rol (Gestor/Programador):");
+                        String rol = scanner.nextLine();
+                        admin.crearUsuario(nombre, rol, usuarios);
+                        break;
                 case 2:
                     System.out.println("Introduce el nombre del usuario a eliminar:");
                     String nombreEliminar = scanner.nextLine();
@@ -256,6 +260,14 @@ class GestionProyectos {
                         return proyecto;
                     }
                 }
+            }
+        }
+        return null;
+    }
+    public static Usuario buscarUsuarioPorNombre(String nombre, ArrayList<Usuario> usuarios) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getNombre().equalsIgnoreCase(nombre.trim())) {
+                return usuario;
             }
         }
         return null;
