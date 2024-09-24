@@ -13,7 +13,8 @@ class GestionProyectos {
         usuarios.add(admin);
 
         while (true) {
-            System.out.println("Introduce tu nombre de usuario:");
+            System.out.println("Introduce tu nombre de usuario. Ten en cuenta que deberás " +
+                    "loguearte cómo 'admin' para crear gestores y programadores:");
             String nombreUsuario = scanner.nextLine();
             Usuario usuario = buscarUsuarioPorNombre(nombreUsuario);
 
@@ -47,43 +48,69 @@ class GestionProyectos {
             System.out.println("2. Eliminar usuario");
             System.out.println("3. Listar usuarios");
             System.out.println("0. Salir");
-            int opcion = Integer.parseInt(scanner.nextLine());
 
-            if (opcion == 0) break;
+            // Uso de try-catch para capturar entradas no numéricas
+            try {
+                int opcion = Integer.parseInt(scanner.nextLine());
 
-            switch (opcion) {
-                case 1:
-                        System.out.println("Introduce el nombre del nuevo usuario:");
-                        String nombre = scanner.nextLine();
-                        if (nombre.isEmpty()) {
+                if (opcion == 0) break; // Salir del menú
+
+                switch (opcion) {
+                    case 1:
+                        // Crear usuario
+                        boolean usuarioCreado = false;
+                        while (!usuarioCreado) {
+                            System.out.println("Introduce el nombre del nuevo usuario:");
+                            String nombre = scanner.nextLine();
+
+                            if (nombre.isEmpty()) {
+                                System.out.println("Error: El nombre no puede estar vacío.");
+                                continue;
+                            }
+
+                            if (buscarUsuarioPorNombre(nombre, usuarios) != null) {
+                                System.out.println("Error: El nombre de usuario '" + nombre + "' ya está en uso.");
+                                System.out.println("¿Quieres intentar con otro nombre? (sí/no):");
+                                String respuesta = scanner.nextLine().trim().toLowerCase();
+                                if (respuesta.equals("no")) {
+                                    break; // Si no quiere continuar, regresa al menú
+                                } else {
+                                    continue; // Si quiere continuar, vuelve a pedir nombre
+                                }
+                            }
+
+                            // Si el nombre no está repetido, se procede con la creación del usuario
+                            System.out.println("Introduce el rol (Gestor/Programador):");
+                            String rol = scanner.nextLine();
+                            admin.crearUsuario(nombre, rol, usuarios);
+                            System.out.println("Usuario '" + nombre + "' creado exitosamente.");
+                            usuarioCreado = true; // Se marca que el usuario fue creado
+                        }
+                        break;
+                    case 2:
+                        // Eliminar usuario
+                        System.out.println("Introduce el nombre del usuario a eliminar:");
+                        String nombreEliminar = scanner.nextLine();
+                        if (nombreEliminar.isEmpty()) {
                             System.out.println("Error: El nombre no puede estar vacío.");
                             return;
                         }
-                        if (buscarUsuarioPorNombre(nombre, usuarios) != null) {
-                            System.out.println("Error: El nombre de usuario '" + nombre + "' ya está en uso.");
-                            return;
-                        }
-                        System.out.println("Introduce el rol (Gestor/Programador):");
-                        String rol = scanner.nextLine();
-                        admin.crearUsuario(nombre, rol, usuarios);
+                        admin.eliminarUsuario(nombreEliminar, usuarios);
                         break;
-                case 2:
-                    System.out.println("Introduce el nombre del usuario a eliminar:");
-                    String nombreEliminar = scanner.nextLine();
-                    if (nombreEliminar.isEmpty()) {
-                        System.out.println("Error: El nombre no puede estar vacío.");
-                        return;
-                    }
-                    admin.eliminarUsuario(nombreEliminar, usuarios);
-                    break;
-                case 3:
-                    admin.listarUsuarios(usuarios);
-                    break;
-                default:
-                    System.out.println("Opción no válida.");
+                    case 3:
+                        // Listar usuarios
+                        admin.listarUsuarios(usuarios);
+                        break;
+                    default:
+                        System.out.println("Opción no válida.");
+                }
+            } catch (NumberFormatException e) {
+                // Captura la excepción si el usuario ingresa algo que no es un número
+                System.out.println("Esa opción no existe. Por favor, elige una opción de la lista.");
             }
         }
     }
+
 
 
     public static void menuGestor(Gestor gestor) {
@@ -96,17 +123,23 @@ class GestionProyectos {
             System.out.println("5. Listar todos los programadores");
             System.out.println("6. Listar programadores de un proyecto");
             System.out.println("0. Salir");
-            int opcion = Integer.parseInt(scanner.nextLine());
+            String opcion = scanner.nextLine();
 
-            if (opcion == 0) break;
+            if (!esNumero(opcion)) {
+                System.out.println("Esa opción no existe. Por favor, elige una opción de la lista.");
+                continue;
+            }
 
-            switch (opcion) {
+            int opcionNum = Integer.parseInt(opcion);
+            if (opcionNum == 0) break;
+
+            switch (opcionNum) {
                 case 1:
                     System.out.println("Introduce el nombre del proyecto:");
                     String nombreProyecto = scanner.nextLine();
                     if (nombreProyecto.isEmpty()) {
                         System.out.println("Error: El nombre del proyecto no puede estar vacío.");
-                        return;
+                        break;
                     }
                     gestor.crearProyecto(nombreProyecto);
                     break;
@@ -119,41 +152,63 @@ class GestionProyectos {
                     Proyecto proyecto = buscarProyectoPorNombre(nombreProyecto);
                     if (proyecto == null) {
                         System.out.println("Error: Proyecto no encontrado.");
-                        return;
+                        System.out.println("¿Quieres crear un nuevo proyecto con este nombre? (sí/no):");
+                        String respuesta = scanner.nextLine();
+                        if (respuesta.equalsIgnoreCase("sí") || respuesta.equalsIgnoreCase("si")) {
+                            gestor.crearProyecto(nombreProyecto);
+                            System.out.println("Proyecto '" + nombreProyecto + "' creado exitosamente.");
+                        } else {
+                            System.out.println("Regresando al menú del gestor...");
+                        }
+                        break;
                     }
+                    // Resto de código para asignar programador si el proyecto fue encontrado
                     System.out.println("Introduce el nombre del programador:");
                     String nombreProgramador = scanner.nextLine();
                     Programador programador = (Programador) buscarUsuarioPorNombre(nombreProgramador);
                     if (programador == null) {
                         System.out.println("Error: Programador no encontrado.");
-                        return;
+                        break;
                     }
                     gestor.asignarProgramadorAProyecto(programador, proyecto);
                     break;
                 case 4:
+                    // Crear tarea en proyecto
                     System.out.println("Introduce el nombre del proyecto:");
                     nombreProyecto = scanner.nextLine();
                     proyecto = buscarProyectoPorNombre(nombreProyecto);
                     if (proyecto == null) {
                         System.out.println("Error: Proyecto no encontrado.");
-                        return;
+                        System.out.println("¿Quieres crear un nuevo proyecto con este nombre? (sí/no):");
+                        String respuesta = scanner.nextLine().trim().toLowerCase();
+                        if (respuesta.equals("sí")) {
+                            gestor.crearProyecto(nombreProyecto);
+                            System.out.println("Proyecto '" + nombreProyecto + "' creado.");
+                            proyecto = buscarProyectoPorNombre(nombreProyecto); // Actualizar referencia del proyecto
+                        } else {
+                            System.out.println("Regresando al menú del gestor...");
+                            continue;
+                        }
                     }
+                    // Aquí puedes continuar con la lógica para crear la tarea si el proyecto ya existe
                     System.out.println("Introduce el nombre del programador:");
                     nombreProgramador = scanner.nextLine();
                     programador = (Programador) buscarUsuarioPorNombre(nombreProgramador);
                     if (programador == null) {
                         System.out.println("Error: Programador no encontrado.");
-                        return;
+                        continue;
                     }
                     System.out.println("Introduce la descripción de la tarea:");
                     String descripcionTarea = scanner.nextLine();
                     gestor.crearTareaEnProyecto(descripcionTarea, proyecto, programador);
                     break;
-                case 5: // Nueva opción para asignar proyecto a programador
+
+
+
+                case 5:
                     System.out.println("Programadores: ");
-                    for (Usuario usuario : usuarios)
-                    {
-                        if (usuario.getRol().equals("Programador")){
+                    for (Usuario usuario : usuarios) {
+                        if (usuario.getRol().equals("Programador")) {
                             System.out.println(usuario.getNombre());
                         }
                     }
@@ -163,7 +218,7 @@ class GestionProyectos {
                     nombreProyecto = scanner.nextLine();
                     proyecto = buscarProyectoPorNombre(nombreProyecto, gestor);
                     if (proyecto != null) {
-                        gestor.listarProgramadoresDeProyecto(proyecto); // Llamada al nuevo método
+                        gestor.listarProgramadoresDeProyecto(proyecto);
                     } else {
                         System.out.println("Proyecto no encontrado.");
                     }
@@ -173,6 +228,20 @@ class GestionProyectos {
             }
         }
     }
+
+    public static boolean esNumero(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
 
     public static Proyecto buscarProyectoPorNombre(String nombre, Usuario usuario) {
         if (usuario instanceof Gestor) {
