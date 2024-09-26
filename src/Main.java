@@ -64,8 +64,13 @@ class GestionProyectos {
                         // Crear usuario
                         boolean usuarioCreado = false;
                         while (!usuarioCreado) {
-                            System.out.println("Introduce el nombre del nuevo usuario:");
+                            System.out.println("Introduce el nombre del nuevo usuario (o 0 para cancelar):");
                             String nombre = scanner.nextLine();
+
+                            if (nombre.equals("0")) {
+                                System.out.println("Operación cancelada.");
+                                break;
+                            }
 
                             if (nombre.isEmpty()) {
                                 System.out.println("Error: El nombre no puede estar vacío.");
@@ -108,14 +113,58 @@ class GestionProyectos {
                         }
                         break;
                     case 2:
-                        System.out.println("Introduce el nombre del usuario a eliminar:");
-                        String nombreEliminar = scanner.nextLine();
-                        if (nombreEliminar.isEmpty()) {
-                            System.out.println("Error: El nombre no puede estar vacío.");
-                            return;
+                        // Crear una lista temporal de usuarios, excluyendo al administrador
+                        ArrayList<Usuario> usuariosFiltrados = new ArrayList<>();
+                        for (Usuario usuario : usuarios) {
+                            if (!(usuario instanceof Administrador)) {
+                                usuariosFiltrados.add(usuario);
+                            }
                         }
-                        admin.eliminarUsuario(nombreEliminar, usuarios);
+
+                        // Verificar si hay usuarios disponibles para eliminar
+                        if (usuariosFiltrados.isEmpty()) {
+                            System.out.println("No hay usuarios disponibles para eliminar.");
+                            break;
+                        }
+
+                        // Mostrar la lista de usuarios que se pueden eliminar (sin el administrador)
+                        System.out.println("Lista de usuarios:");
+                        for (int i = 0; i < usuariosFiltrados.size(); i++) {
+                            System.out.println((i + 1) + ". " + usuariosFiltrados.get(i).getNombre());
+                        }
+
+                        System.out.println("Introduce el número del usuario a eliminar ('0' para cancelar):");
+                        String numeroEliminar = scanner.nextLine();
+
+                        if (!esNumero(numeroEliminar)) {
+                            System.out.println("Error: Opción no válida.");
+                            break;
+                        }
+
+                        int indiceEliminar = Integer.parseInt(numeroEliminar) - 1;
+                        if (indiceEliminar == -1) {
+                            System.out.println("Operación cancelada.");
+                            break;
+                        }
+
+                        if (indiceEliminar < 0 || indiceEliminar >= usuariosFiltrados.size()) {
+                            System.out.println("Error: Número de usuario no válido.");
+                            break;
+                        }
+
+                        Usuario usuarioAEliminar = usuariosFiltrados.get(indiceEliminar);
+
+                        // Si el usuario a eliminar es un programador, lo eliminamos de la lista de programadores
+                        if (usuarioAEliminar instanceof Programador) {
+                            programadores.remove(usuarioAEliminar);
+                        }
+
+                        // Eliminar el usuario de la lista principal de usuarios
+                        admin.eliminarUsuario(usuarioAEliminar.getNombre(), usuarios);
+                        System.out.println("Usuario '" + usuarioAEliminar.getNombre() + "' eliminado exitosamente.");
                         break;
+
+
                     case 3:
                         admin.listarUsuarios(usuarios);
                         break;
@@ -151,10 +200,14 @@ class GestionProyectos {
 
             switch (opcionNum) {
                 case 1:
-                    System.out.println("Introduce el nombre del proyecto:");
+                    System.out.println("Introduce el nombre del proyecto o '0' para cancelar:");
                     String nombreProyecto = scanner.nextLine();
                     if (nombreProyecto.isEmpty()) {
                         System.out.println("Error: El nombre del proyecto no puede estar vacío.");
+                        break;
+                    }
+                    if (nombreProyecto.equals("0")) {
+                        System.out.println("Operación cancelada.");
                         break;
                     }
                     gestor.crearProyecto(nombreProyecto);
@@ -163,6 +216,7 @@ class GestionProyectos {
                     gestor.listarProyectos();
                     break;
                 case 3:
+
                     gestor.asignarProgramadorAProyecto(programadores); // Asignación de programador a proyecto
                     break;
                 case 4:
@@ -262,23 +316,49 @@ class GestionProyectos {
                         System.out.println("Error: Proyecto no encontrado.");
                         break;
                     }
-                    System.out.println("Introduce la descripción de la tarea:");
-                    String descripcionTarea = scanner.nextLine();
-                    Tarea tareaEncontrada = null;
 
-                    // Buscar la tarea en el proyecto
+                    ArrayList<Tarea> tareasAsignadas = new ArrayList<>();
+
+                    // Mostrar solo las tareas asignadas a este programador
                     for (Tarea tarea : proyectoParaTarea.tareas) {
-                        if (tarea.getDescripcion().equals(descripcionTarea) && tarea.getProgramador().equals(programador)) {
-                            tareaEncontrada = tarea;
+                        if (tarea.getProgramador().equals(programador)) {
+                            tareasAsignadas.add(tarea);
                         }
                     }
-                    if (tareaEncontrada != null) {
-                        programador.marcarTareaFinalizada(tareaEncontrada);
-                        System.out.println("Tarea marcada como finalizada.");
-                    } else {
-                        System.out.println("Error: Tarea no encontrada o no asignada a este programador.");
+
+                    if (tareasAsignadas.isEmpty()) {
+                        System.out.println("No tienes tareas asignadas en este proyecto.");
+                        break;
                     }
+
+                    System.out.println("Tareas asignadas:");
+                    for (int i = 0; i < tareasAsignadas.size(); i++) {
+                        System.out.println((i + 1) + ". " + tareasAsignadas.get(i).getTitulo());
+                    }
+
+                    System.out.println("Selecciona la tarea por número ('0' para cancelar):");
+                    String numeroTarea = scanner.nextLine();
+                    if (numeroTarea.equals("0")) {
+                        System.out.println("Operación cancelada.");
+                        break;
+                    }
+                    if (!esNumero(numeroTarea)) {
+                        System.out.println("Error: Opción no válida.");
+                        break;
+                    }
+
+                    int indiceTarea = Integer.parseInt(numeroTarea) - 1;
+
+                    if (indiceTarea < 0 || indiceTarea >= tareasAsignadas.size()) {
+                        System.out.println("Error: Número de tarea no válido.");
+                        break;
+                    }
+
+                    Tarea tareaFinalizar = tareasAsignadas.get(indiceTarea);
+                    programador.marcarTareaFinalizada(tareaFinalizar);
+                    System.out.println("Tarea '" + tareaFinalizar.getTitulo() + "' marcada como finalizada.");
                     break;
+
                 default:
                     System.out.println("Opción no válida.");
             }

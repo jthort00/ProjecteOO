@@ -58,10 +58,14 @@ class Gestor extends Usuario {
 
         listarProyectos(); // Listamos todos los proyectos disponibles
 
-        System.out.println("Selecciona el número del proyecto:");
+        System.out.println("Selecciona el número del proyecto ('0' para cancelar):");
         Scanner scanner = new Scanner(System.in);
         int indiceProyecto = scanner.nextInt();
 
+        if (indiceProyecto == 0) {
+            System.out.println("Operación cancelada.");
+            return null;
+        }
         if (indiceProyecto < 1 || indiceProyecto > proyectos.size()) {
             System.out.println("Opción inválida.");
             return null;
