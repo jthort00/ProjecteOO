@@ -2,8 +2,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
-class Programador extends Usuario {
-    ArrayList<Proyecto> proyectos;
+public class Programador extends Usuario {
+    ArrayList<Proyecto> proyectos = new ArrayList<>();
+
+    public ArrayList<Proyecto> getProyectos() {
+        return proyectos;
+    }
 
     public Programador(String nombre) {
         super(nombre, "Programador");
@@ -20,14 +24,18 @@ class Programador extends Usuario {
     public void consultarTareas(Proyecto proyecto) {
         System.out.println("Tareas asignadas a " + this.getNombre() + " en el proyecto " + proyecto.nombre + ":");
         for (Tarea tarea : proyecto.tareas) {
-            if (tarea.programador.equals(this)) {
+            if (tarea.getProgramador().equals(this)) {
                 System.out.println(tarea);
             }
         }
     }
 
-    public void marcarTareaFinalizada(Tarea tarea) {
-        tarea.marcarFinalizada();
-        System.out.println("Tarea " + tarea.descripcion + " marcada como finalizada.");
+    public static void marcarTareaFinalizada(Tarea tarea) {
+        if (tarea != null) {
+            tarea.setFinalizada(true);
+            System.out.println("La tarea '" + tarea.getTitulo() + "' ha sido marcada como finalizada.");
+        } else {
+            System.out.println("La tarea no existe.");
+        }
     }
 }
