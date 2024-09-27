@@ -33,7 +33,7 @@ public class Programador extends Usuario {
     public static void marcarTareaFinalizada(Tarea tarea) {
         if (tarea != null) {
             tarea.setFinalizada(true);
-            System.out.println("La tarea '" + tarea.getTitulo() + "' ha sido marcada como finalizada.");
+
         } else {
             System.out.println("La tarea no existe.");
         }
